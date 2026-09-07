@@ -1,0 +1,23 @@
+# Virtual environment / Conda
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+
+# Runtime output (generated at run time; keep the folder, ignore its contents)
+**/logs/*
+**/results/*
+!**/logs/.gitkeep
+!**/results/.gitkeep
