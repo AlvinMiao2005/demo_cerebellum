@@ -14,10 +14,11 @@ The battery integrates classical cognitive paradigms into standardized, pygame-d
 
 - **Python 3.10+** (developed and tested on Python 3.10.12). This floor is a hard requirement, not just a recommendation: session/runtime state throughout the codebase (e.g. `utils/config.py`) is type-annotated with `str | None`-style unions evaluated directly at runtime (PEP 604), which only works natively on Python 3.10+.
 - **Package manager:** [Conda](https://docs.conda.io/) (recommended; the project's editor configuration assumes a Conda-managed environment and interpreter)
-- **Runtime dependency:** [`pygame`](https://www.pygame.org/) (`>= 2.5`) — the only third-party package used anywhere in the battery, across all 8 task modules and the shared template. It handles stimulus rendering, display/window management, and keyboard/joystick input. Pinned in [`requirements.txt`](./requirements.txt).
+- **Runtime dependency:** [`pygame`](https://www.pygame.org/) (`>= 2.5`) — the only third-party package needed by the shared template and 9 of the 10 task modules. It handles stimulus rendering, display/window management, and keyboard/joystick input.
+- **Additional dependencies for `et` only:** `pandas`, `numpy` and `opencv-python` (video-clip playback and rating-trace handling). All are listed in [`requirements.txt`](./requirements.txt).
 - **Input device:** keyboard only is sufficient to run every task. A joystick is auto-detected and used if present (`pygame.joystick`), but every module falls back cleanly to keyboard-only responses when none is connected — no special hardware is required to try the code.
 
-Everything else imported across the codebase (`dataclasses`, `pathlib`, `logging`, `csv`, `itertools`, `re`, `math`, `datetime`, `typing`, `collections`, `traceback`) is part of the Python standard library.
+Everything else imported across the codebase, apart from the `et` dependencies above (`dataclasses`, `pathlib`, `logging`, `csv`, `itertools`, `re`, `math`, `datetime`, `typing`, `collections`, `traceback`) is part of the Python standard library.
 
 ### Setup
 
@@ -68,6 +69,8 @@ demo_cerebellum/
 ├── 3d/               # Task module (built from template/)
 ├── ccc/              # Task module (built from template/)
 ├── ccs/              # Task module (built from template/)
+├── clamp/            # Task module (built from template/)
+├── et/               # Task module (built from template/)
 ├── gss/              # Task module (built from template/)
 ├── ied/              # Task module (built from template/)
 ├── nBack/            # Task module (built from template/)
@@ -75,7 +78,7 @@ demo_cerebellum/
 ├── template/         # Shared task-engine template — see "Framework Architecture" below
 ├── .vscode/          # Editor + environment configuration
 ├── .gitignore
-├── requirements.txt  # Single runtime dependency: pygame
+├── requirements.txt  # pygame (+ pandas, numpy, opencv-python for et)
 └── README.md
 ```
 
@@ -100,6 +103,8 @@ The `ui/` and `utils/` layers are shared template infrastructure (see below); wh
 | `2d` / `3d` | `practice.py`, `test.py`, `experiment_flow.py` — mental-rotation-style letter/shape judgment task in 2D / 3D |
 | `ccc` | `construct_trials.py`, `single_tasks.py`, `multi_tasks.py`, `experiment_flow.py` — single-task vs. multi-task condition design |
 | `ccs` | `framework.py`, `motor.py`, `sensorimotor.py`, `stimuli.py`, `instructions.py`, `feedback.py`, `generate_trials.py`, `experiment_flow.py` — motor and sensorimotor sub-tasks |
+| `clamp` | `clamp.py`, `practice.py`, `test.py`, `experiment_flow.py` — visuomotor clamp task with a hidden mouse and cursor-feedback conditions |
+| `et` | `experiment_flow.py`, `mouseCordDot.py`, `practice.py`, `stimulus.py`, `saves.py`, `test.py` — emotion tracking: continuous trackpad rating of a film character's emotion during video clips |
 | `gss` | `basic_practice.py`, `goal_practice.py`, `test.py`, `experiment_flow.py` — goal-directed (speed/accuracy) Stroop-style task with DDM-ready trial data |
 | `ied` | `practice.py`, `test.py`, `experiment_flow.py` |
 | `nBack` | `one_back.py`, `two_back.py`, `three_back.py`, `pull_stimuli.py`, `experiment_flow.py` — classic N-back working-memory task |
@@ -110,7 +115,7 @@ The `ui/` and `utils/` layers are shared template infrastructure (see below); wh
 
 ## Framework Architecture
 
-`template/` is not sample code — it is the shared engine that powers every task in the battery. Each of the eight task modules above began as a copy of `template/`, then customized its stimuli, response mapping, and trial/save logic (the `src/core/` contents in the table above). This gives the whole battery a common runtime, a common results schema, and a common participant-facing flow, so data collected across different cognitive paradigms stays directly comparable and a new task can be stood up in hours rather than days.
+`template/` is not sample code — it is the shared engine that powers every task in the battery. Each of the ten task modules above began as a copy of `template/`, then customized its stimuli, response mapping, and trial/save logic (the `src/core/` contents in the table above). This gives the whole battery a common runtime, a common results schema, and a common participant-facing flow, so data collected across different cognitive paradigms stays directly comparable and a new task can be stood up in hours rather than days.
 
 ### Execution flow
 
@@ -153,5 +158,6 @@ Everything else — display setup, fullscreen handling, participant/admin intake
 ## Notes
 
 - Generated runtime artifacts (`logs/*`, `results/*`, `__pycache__/`, virtual environments) are excluded from version control via `.gitignore`; the `logs/` and `results/` folders themselves are kept in git via `.gitkeep` placeholders so the expected output locations are visible without running anything.
+- **`et` assets:** film stills and video clips are not redistributable and are omitted. Baseline frames and instruction/practice screenshots are generated placeholders, `resources/stimuli/**/*.mp4` is git-ignored, and the task needs user-supplied clips to run end to end.
 - This repository is a portfolio demo derived from an active lab codebase; internal experimental notes and participant data have been excluded — nothing under `resources/` is real participant data, and no `logs/` or `results/` output from real sessions is included.
 - No license file is included yet; this repository is shared as a code-sample / portfolio excerpt rather than a redistributable package. Add a `LICENSE` if you intend to make it reusable by others under specific terms.

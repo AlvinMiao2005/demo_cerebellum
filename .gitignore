@@ -21,3 +21,6 @@ Thumbs.db
 **/results/*
 !**/logs/.gitkeep
 !**/results/.gitkeep
+
+# Film clips (not redistributable; supply locally)
+**/resources/stimuli/**/*.mp4
